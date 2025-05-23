@@ -95,8 +95,20 @@
 			}, userConfig);
 
 			// Expand "target" if it's not a jQuery object already.
-				if (typeof config.target != 'jQuery')
-					config.target = $(config.target);
+				if (!(config.target instanceof jQuery)) {
+					try {
+						// Validate that config.target is a safe CSS selector
+						if (typeof config.target === 'string' && /^[a-zA-Z0-9_\-#.: ]+$/.test(config.target)) {
+							config.target = $(config.target);
+						} else {
+							console.error('Invalid target selector provided. Falling back to default target.');
+							config.target = $this; // Default to the current element
+						}
+					} catch (e) {
+						console.error('Error processing target selector. Falling back to default target.', e);
+						config.target = $this; // Default to the current element
+					}
+				}
 
 		// Panel.
 
